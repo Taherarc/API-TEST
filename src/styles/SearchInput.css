@@ -1,4 +1,8 @@
-/* Estilos aislados para SearchInput */
+/**
+ * Contenedor de estilos exclusivos para el campo de búsqueda (`SearchInput.tsx`).
+ * Administra la disposición absoluta de íconos superpuestos, pseudo-elementos delimitadores,
+ * y transiciones suaves de contorno reactivas bajo eventos de activación (Focus states).
+ */
 
 .search-container {
   position: relative;
@@ -10,31 +14,32 @@
 .search-input {
   width: 100%;
   padding: 0.85rem 1rem 0.85rem 2.8rem;
-  border-radius: 8px;
-  border: 1px solid #334155;
-  background-color: var(--card-bg);
-  color: var(--text-main);
-  font-size: 1rem;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(15, 23, 42, 0.4);
+  color: #ffffff;
+  font-size: 0.95rem;
   transition: all 0.2s ease;
   box-sizing: border-box;
+  backdrop-filter: blur(4px);
 }
 
 .search-input:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: #34d399;
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.2);
 }
 
 .search-input::placeholder {
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .search-icon {
   position: absolute;
-  left: 1rem;
+  left: 1.2rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.6);
   pointer-events: none;
   font-size: 1.1rem;
 }

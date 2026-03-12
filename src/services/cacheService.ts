@@ -1,20 +1,21 @@
 /**
- * Modulo de infraestructura para la gestion de persistencia temporal.
- * Implementa una capa de abstracción sobre sessionStorage para facilitar
- * el almacenamiento de datos serializados.
+ * Módulo de infraestructura abstracta para la persistencia efímera (caché).
+ * Implementa una capa de protección e inyección sobre el `sessionStorage` nativo,
+ * facilitando envolturas tipadas para serialización/deserialización de estructuras JSON completas.
  */
 
 /**
- * Recupera y deserializa un objeto almacenado bajo una clave especifica.
+ * Evalúa y rehidrata instancialmente un objeto de texto plano almacenado por su clave.
  *
  * Parámetros:
- *   key (string): Identificador unico del recurso en el almacenamiento.
+ *     key (string): Firma identificatoria única del recurso en el diccionario de sesión.
+ *
+ * Efectos Secundarios:
+ * - Realiza lecturas sincrónicas subyacentes (`sessionStorage.getItem`).
+ * - Intercepta fallos de formato `JSON.parse` emitiendo advertencias por consola.
  *
  * Retorna:
- *   T | null: El objeto deserializado del tipo generico T, o null si no existe.
- *
- * Dependencias:
- *   JSON.parse: Utilizado para convertir cadenas de texto en objetos de JavaScript.
+ *     T | null: El objeto genérico `T` reconstruido en memoria. Devuelve nulo frente a carencia o corrupción.
  */
 export function getFromCache<T>(key: string): T | null {
   // Consulta el valor asociado a la clave en el almacenamiento de sesion.
@@ -32,11 +33,14 @@ export function getFromCache<T>(key: string): T | null {
 }
 
 /**
- * Serializa y persiste un objeto en el almacenamiento local de sesion.
+ * Codifica una estructura de memoria reactiva en `string` forzando su preservación local.
  *
  * Parámetros:
- *   key (string): Clave bajo la cual se guardara el dato.
- *   data (any): Objeto o valor a persistir.
+ *     key (string): Clave alfanumérica índice bajo la cual se asociará el string final.
+ *     data (any): Entidad JavaScript (primitivo u objeto complejo serializable).
+ *
+ * Efectos Secundarios:
+ * - Mutación destructiva de la entrada global en `sessionStorage` correspondiente al `key`.
  */
 export function saveToCache(key: string, data: any): void {
   // Convierte el objeto en una cadena JSON y lo almacena.
@@ -44,10 +48,13 @@ export function saveToCache(key: string, data: any): void {
 }
 
 /**
- * Elimina un recurso especifico del almacenamiento.
+ * Descarta selectivamente una entrada pre-existente forzando recargas futuras de red.
  *
  * Parámetros:
- *   key (string): Clave del recurso a invalidar.
+ *     key (string): Descriptor índice del recurso objetivo a destruir.
+ *
+ * Efectos Secundarios:
+ * - Remueve el binomio de datos del `sessionStorage` si la clave coincide.
  */
 export function invalidateCache(key: string): void {
   // Remueve la entrada asociada a la clave proporcionada.
@@ -55,7 +62,10 @@ export function invalidateCache(key: string): void {
 }
 
 /**
- * Purga la totalidad de los datos almacenados en la sesion actual.
+ * Evento destructivo contundente orientado a sanitizar toda traza pre-cachada global.
+ *
+ * Efectos Secundarios:
+ * - Vacía incondicionalmente todos los vectores del `sessionStorage` ligados al origen actual.
  */
 export function clearCache(): void {
   // Ejecuta una limpieza completa del objeto sessionStorage.

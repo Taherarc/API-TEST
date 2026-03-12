@@ -1,3 +1,9 @@
+/**
+ * Hoja de estilos global base de la aplicación.
+ * Define la tipografía genérica, la paleta cromática inicial basada en
+ * esquemas claro/oscuro soportados por el sistema operativo, y optimiza
+ * el renderizado estándar de texto para garantizar una mejor legibilidad.
+ */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -13,19 +19,21 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Define el comportamiento visual estándar de los enlaces interactivos */
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
+  cursor: pointer;
 }
+/* Modifica el color del enlace durante la interacción de cursor flotante */
 a:hover {
   color: #535bf2;
 }
 
+/* Restablece los márgenes del body y asegura que ocupe todo el espacio de la ventana virtual */
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -35,6 +43,7 @@ h1 {
   line-height: 1.1;
 }
 
+/* Normaliza el aspecto de los botones interactivos a nivel global */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -46,14 +55,17 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+/* Transición visual del borde durante el enfoque del cursor sobre el botón */
 button:hover {
   border-color: #646cff;
 }
+/* Resaltado de accesibilidad para la navegación mediante teclado o enfoque programático */
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Media query para adaptar automáticamente variables de color cuando el sistema se configura en modo claro */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

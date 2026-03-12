@@ -1,37 +1,40 @@
 /**
- * Gancho personalizado para gestionar la lógica de fragmentación de listas.
- * Abstrae el estado de la página actual y automatiza el calculo de segmentos visibles.
+ * Módulo para la gestión lógica de fragmentación de listas.
+ * Abstrae el estado de la página activa y automatiza el cálculo matemático
+ * de los segmentos visibles y métricas escalares de paginación.
  */
 
 import { useState, useMemo } from 'react';
 import { paginateList, calculateTotalPages } from '../utils/paginationUtils';
 
 /**
- * Orquesta el comportamiento de paginacion para cualquier coleccion de datos.
+ * Orquesta el comportamiento de paginación en memoria para colecciones abstractas.
  *
  * Parámetros:
- *   items (T[]): Coleccion completa de elementos a paginar.
- *   pageSize (number): Cantidad maxima de elementos a mostrar por página.
+ *     items (T[]): Arreglo genérico inmutable completo de elementos a fraccionar.
+ *     pageSize (number): Límite escalar máximo tolerado de elementos a renderizar en bloque.
  *
  * Retorna:
- *   Objeto con estados y utilidades de navegacion.
+ *     Object: Entidad empaquetada con la porción seccionada de datos (`paginatedItems`),
+ *     variables operativas de recorrido (`currentPage`, `totalPages`) y banderas lógicas
+ *     derivadas (`hasNextPage`, `hasPrevPage`).
  */
 export function usePagination<T>(items: T[], pageSize: number) {
-  // Estado que rastrea el indice de la página activa (iniciando en 1).
+  // Estado local reactivo que rastrea el índice escalar de la página activa (base 1).
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Efecto de memorizacion para resetear la página al primer bloque si cambia la fuente de datos.
-  // Esto es critico cuando el usuario realiza una busqueda nueva.
+  // Hook de memorización pasivo para forzar el reinicio unívoco a la página 1.
+  // Es crítico para re-alinear la vista cuando existen transmutaciones bruscas de búsqueda.
   useMemo(() => {
     setCurrentPage(1);
   }, [items]);
 
-  // Deriva el segmento de la lista que debe renderizarse actualmente.
+  // Deriva sincrónicamente el segmento (slice) exacto de la lista basándose en límites calculados.
   const paginatedItems = useMemo(() => {
     return paginateList(items, currentPage, pageSize);
   }, [items, currentPage, pageSize]);
 
-  // Calcula el total de paginas totales basadas en la dimensiones del dataset.
+  // Opera la división estructural del dataset bruto contra la constante de tamaño por página.
   const totalPages = useMemo(() => {
     return calculateTotalPages(items.length, pageSize);
   }, [items, pageSize]);

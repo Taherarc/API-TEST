@@ -1,6 +1,7 @@
 /**
- * Punto de entrada de la aplicación.
- * Orquesta el arranque del entorno de React y la hidratacion del DOM.
+ * Punto de entrada principal de la aplicación.
+ * Orquesta el arranque del entorno de React, importando los estilos globales
+ * y montando el árbol de componentes en el DOM del navegador.
  */
 
 import React from 'react'
@@ -9,12 +10,14 @@ import App from './App'
 import './index.css'
 
 /**
- * Inicializa el arbol de componentes dentro del contenedor root.
- * Utiliza el Modo Estricto de React para detectar efectos secundarios inesperados.
+ * Inicializa el árbol de componentes dentro del elemento HTML contenedor 'root'.
+ * Se utiliza el contenedor StrictMode de React para habilitar comprobaciones
+ * adicionales y advertencias durante el desarrollo, facilitando la detección
+ * temprana de efectos secundarios inesperados o métodos obsoletos.
  */
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* Componente principal que contiene la lógica de Providers y ruteo. */}
+    {/* Instancia el componente raíz que orquesta los proveedores y la interfaz */}
     <App />
   </React.StrictMode>,
 )

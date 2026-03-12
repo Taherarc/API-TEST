@@ -1,20 +1,26 @@
 /**
- * Componente representacional de estado de espera.
- * Provee feedback visual durante operaciones asincronas de red o procesamiento.
+ * Módulo representacional para estados de espera.
+ * Encapsula la retroalimentación visual estandarizada para notificar a los usuarios
+ * operaciones transaccionales pendientes de red o simuladas en curso.
  */
 
 import React from 'react';
 
 /**
- * Renderiza un spinner animado acompañado de un mensaje descriptivo.
+ * Renderiza un spinner animado vectorialmente acompañado de una descripción estática.
+ * Genera de forma aislada las animaciones CSS en el DOM, prescribiendo la cascada.
+ *
+ * Retorna:
+ *     JSX.Element: Estructura DOM de bloqueo o espera nativa.
  */
 const Loader: React.FC = () => (
   <div className="system-feedback loader">
-    {/* Contenedor circular con animacion rotativa via CSS. */}
+    {/* Componente base vacío destinado a soportar la rotación continua programada */}
     <div className="spinner"></div>
     <p>Estableciendo comunicacion segura...</p>
     
-    {/* Estilizado embebido para garantizar la encapsulacion del efecto visual. */}
+    {/* Bloque autodenominado de estilado. Inyecta propiedades exclusivas para el loader
+        evitando colisiones sintácticas externas mediante nombres dedicados y un alcance local estricto. */}
     <style>{`
       .spinner {
         width: 40px;

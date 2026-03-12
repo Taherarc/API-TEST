@@ -1,32 +1,37 @@
 /**
- * Gancho personalizado para optimizar la frecuencia de actualizacion de un valor.
- * Retrasa la propagacion de un cambio hasta que haya transcurrido un tiempo de inactividad especifico.
+ * Módulo para la optimización de frecuencia de actualización reactiva.
+ * Proporciona un hook que retrasa la propagación de un cambio de estado continuo
+ * (debouncing) hasta que transcurre un período de inactividad de redibujado.
  */
 
 import { useState, useEffect } from 'react';
 
 /**
- * Aplica una logica de debouncing sobre un valor de entrada.
+ * Aplica una lógica de estabilización "debouncing" sobre un valor atómico reactivo.
  *
  * Parámetros:
- *   value (T): El valor de entrada que se desea estabilizar.
- *   delay (number): Tiempo de espera en milisegundos antes de actualizar el valor estabilizado.
+ *     value (T): El valor variable genérico de entrada cuya propagación se desea postergar.
+ *     delay (number): Tiempo muerto de espera predefinido en milisegundos.
+ *
+ * Efectos Secundarios:
+ * - Arranca y destruye iterativamente instancias de temporizadores (`setTimeout`/`clearTimeout`).
+ * - Forzará un re-renderizado a los consumidores cada vez que expire exitosamente el timer activo.
  *
  * Retorna:
- *   T: El valor estabilizado tras el periodo de espera definido.
+ *     T: El valor actualizado tras ser validado por la carencia reactiva del período impuesto.
  */
 export function useDebounce<T>(value: T, delay: number): T {
-  // Estado interno que almacena el valor estabilizado.
+  // Estado local encapsulado utilizado para guardar la captura retrasada segura del valor.
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    // Configura un temporizador para actualizar el estado tras el delay.
+    // Configura la función temporizada destinada a resolver la actualización del estado retardada.
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
 
-    // Limpia el temporizador previo si el valor cambia antes de completar el delay.
-    // Esto previene multiples actualizaciones sucesivas.
+    // Método de contención para ciclo de actualización del componente. Elimina el temporizador pendiente.
+    // Garantiza que la cascada final no dispare transmutaciones simultáneas.
     return () => {
       clearTimeout(handler);
     };

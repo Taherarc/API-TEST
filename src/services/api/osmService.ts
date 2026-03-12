@@ -1,6 +1,7 @@
 /**
- * Servicio de enriquecimiento de datos mediante OpenStreetMap (Nominatim).
- * Provee geolocalizacion y metadatos detallados de fuentes colaborativas.
+ * Módulo especializado en la instrumentación del servicio externo OpenStreetMap Nominatim.
+ * Orquesta la transformación interactiva de variables textuales toponímicas hacia
+ * diccionarios unificados de vectorización inversa geoespacial estricta.
  */
 
 import { OSMPlace } from '../../types/geoTypes';
@@ -10,17 +11,19 @@ const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 
 export const osmService = {
   /**
-   * Realiza una búsqueda inversa de metadatos para una ubicacion urbana especifica.
+   * Instrumenta jerárquicamente una búsqueda geolocal cruzando topónimos nominales
+   * y filtros de jurisdicción territorial ISO de nivel pre-candidato.
    *
    * Parámetros:
-   *   cityName (string): Nombre de la ciudad a inspeccionar.
-   *   countryCode (string): Codigo del pais para filtrar el ambito de búsqueda.
+   *     cityName (string): Referencia nominal obligatoria del segmento urbano explícito.
+   *     countryCode (string): Acrónimo ISO emparejado operando como ancla perimetral geográfica.
    *
    * Retorna:
-   *   Promise<OSMPlace | null>: Datos geoespaciales o null si no hay coincidencias.
+   *     Promise<OSMPlace | null>: Registro plano tipado posicional de primer impacto convergente,
+   *     o resultado condicionado asimétrico nulo cuando la inyectividad falla exhaustivamente.
    *
    * Dependencias:
-   *   URLSearchParams: Codifica los parametros en formato adecuado para URL query.
+   *     URLSearchParams: Instancia de plataforma nativa creadora de diccionarios de clave-valor URLEncoded.
    */
   getCityDetails: async (cityName: string, countryCode: string): Promise<OSMPlace | null> => {
     try {

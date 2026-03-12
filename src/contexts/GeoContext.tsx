@@ -1,6 +1,7 @@
 /**
- * Proveedor de estado global para la navegacion y gestion geografica.
- * Centraliza la posicion jerarquica del usuario y la recuperacion de datos asociados.
+ * Proveedor de estado global para la navegación y gestión topológica geográfica.
+ * Centraliza la posición jerárquica del usuario (país/estado/ciudad) y la retención
+ * segura de los volúmenes de datos asociados consumidos de la capa de persistencia API.
  */
 
 import React, { createContext, useState, ReactNode, useContext } from 'react';
@@ -8,22 +9,22 @@ import { Country, State } from '../types/geoTypes';
 import { useGeoData } from '../hooks/useGeoData';
 
 /**
- * Definicion de la interfaz de control y datos del dominio geografico.
+ * Definición rigurosa de la interfaz de control semántico y estado del dominio geográfico.
  */
 interface GeoContextType {
-  // Coleccion de datos cargados actualmente (Paises, Estados o Ciudades).
+  // Arreglo polimórfico efímero de datos geográficos cargados actualmente.
   dataList: any[];
-  // Estados de control de flujo asincrono.
+  // Estados transaccionales de control de flujo asíncrono y diagnóstico.
   loading: boolean;
   error: string | null;
   source: 'network' | 'cache' | 'fallback' | null;
   
-  // Rastro de navegacion y seleccion actual.
+  // Nivel absoluto representativo de la profundidad de navegación actual en el árbol.
   currentLevel: 'countries' | 'states' | 'cities';
   selectedCountry: Country | null;
   selectedState: State | null;
   
-  // Acciones de transicion de nivel.
+  // Acciones inyectoras interactivas para el cambio estructural jerárquico.
   setCountries: () => void;
   setStatesByCountry: (country: Country) => void;
   setCitiesByState: (state: State) => void;
@@ -31,11 +32,18 @@ interface GeoContextType {
   resetNavigation: () => void;
 }
 
-// Creacion del contexto para el arbol de componentes.
+// Creación estructural estática del contexto fuertemente tipado para el árbol React.
 const GeoContext = createContext<GeoContextType | undefined>(undefined);
 
 /**
- * Componente Provider que orquesta los ganchos de carga y el estado de ruteo interno.
+ * Componente Provider que orquesta la persistencia local de los datos geográficos
+ * y expone la máquina de estados de enrutamiento jerárquico interno (drill-down).
+ *
+ * Parámetros:
+ *     children (ReactNode): Sub-árbol de componentes que observarán mutaciones de este nodo.
+ *
+ * Retorna:
+ *     JSX.Element: Nodo JSX instanciando el proveedor global con toda la topología envuelta.
  */
 export const GeoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Integra la logica de peticiones desde el gancho useGeoData.
@@ -47,7 +55,11 @@ export const GeoProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [selectedState, setSelectedState] = useState<State | null>(null);
 
   /**
-   * Establece la vista principal de paises a nivel global.
+   * Restablece la vista al nivel primario forzando la visualización del listado de naciones.
+   *
+   * Efectos Secundarios:
+   * - Anula variables estáticas de selección profunda en el estado reactivo local.
+   * - Lanza una invocación HTTP silenciosa delegada en `geo.fetchCountries()`.
    */
   const setCountries = () => {
     setCurrentLevel('countries');
@@ -57,7 +69,14 @@ export const GeoProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   /**
-   * Transiciona al nivel de estados tras seleccionar un pais.
+   * Desciende dinámicamente al nivel intermedio de la aplicación cargando estados.
+   *
+   * Parámetros:
+   *     country (Country): Objeto estructurado de la nación elegida durante la interacción.
+   *
+   * Efectos Secundarios:
+   * - Conserva la estructura `Country` como referencia matriz viva y anula entidades inferiores.
+   * - Provoca petición IO exigiendo `country.iso2` para bajar estados correlativos interactuables.
    */
   const setStatesByCountry = (country: Country) => {
     setSelectedCountry(country);
@@ -67,7 +86,14 @@ export const GeoProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   /**
-   * Transiciona al nivel de ciudades dentro de una region administrativa.
+   * Ejecuta el cierre o anidación más profunda iterando las ciudades constituyentes regionales.
+   *
+   * Parámetros:
+   *     state (State): Objeto estado conteniendo identificantes requeridos en red.
+   *
+   * Efectos Secundarios:
+   * - Confirma el estado seleccionado fijándolo en base reactiva viva.
+   * - Desempaqueta y envía el cruce de peticiones requiriendo los códigos primarios `iso2`.
    */
   const setCitiesByState = (state: State) => {
     setSelectedState(state);
@@ -78,23 +104,24 @@ export const GeoProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   /**
-   * Reinicia el arbol de navegacion al punto de origen.
+   * Método orquestado general para anular forzosamente cualquier estado geográfico navegativo actual.
    */
   const resetNavigation = () => {
     setCountries();
   };
 
   /**
-   * Implementa la logica de retroceso un nivel en la jerarquia.
+   * Implementa mecánica de escape contextual moviendo hacia atrás en la profundidad de capas visuales.
+   * Resuelve re-aserciones si los índices geográficos demandan sincronización paralela.
    */
   const goBack = () => {
     if (currentLevel === 'cities') {
       setCurrentLevel('states');
       setSelectedState(null);
-      // Recarga los estados del pais actual para asegurar consistencia de datos.
+      // Re-descarga delegada o toma desde caché de todos los estados correspondientes a la unidad nacional.
       if (selectedCountry) geo.fetchStates(selectedCountry.iso2);
     } else if (currentLevel === 'states') {
-      // Retorno directo al nivel de paises.
+      // Regreso inmediato y re-sincronización con el estrato raíz visible.
       setCountries();
     }
   };
@@ -117,11 +144,14 @@ export const GeoProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 };
 
 /**
- * Hook de acceso simplificado para consumidores del GeoContext.
+ * Hook de abstracción para consumo interno reactivo del `GeoContext`.
+ *
+ * Retorna:
+ *     GeoContextType: Colección de métodos y estados fuertemente tipados.
  */
 export const useGeo = () => {
   const context = useContext(GeoContext);
-  // Garantiza que el hook sea utilizado dentro de un GeoProvider para evitar fallos de referencia.
-  if (!context) throw new Error('useGeo debe usarse dentro de GeoProvider');
+  // Bloqueo preventivo crítico a nivel de consola si el hook se invoca en un plano DOM ajeno al Provider.
+  if (!context) throw new Error('useGeo debe usarse dentro de la jerarquía protegida de un GeoProvider');
   return context;
 };

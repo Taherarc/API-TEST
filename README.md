@@ -1,4 +1,4 @@
-# Explorador Geográfico 
+# Geo Explorador
 
 Esta aplicación es un sistema de exploración geográfica, desarrollado con **React 18**, **TypeScript** y una arquitectura por capas.
 
@@ -60,6 +60,18 @@ La aplicación implementa una estrategia **Network First + Cache Fallback**:
 - **TypeScript**: Tipado estricto en todas las capas para prevenir errores en tiempo de ejecución.
 - **Debounced Search**: Búsqueda local optimizada que espera 300ms para evitar sobrecarga de renders.
 - **Paginación Inteligente**: Segmentación de listas largas para mantener un rendimiento de renderizado constante.
+
+## Documentación Técnica Exhaustiva
+
+Este proyecto ha superado un riguroso proceso de documentación técnica en español, orientado a estándares profesionales y públicos.
+Cada módulo (React, Hooks, Contextos, Servicios y CSS) contiene bloques de docstrings y comentarios detallados que describen:
+- **Propósito Arquitectónico**: Función principal de cada componente en la jerarquía del sistema.
+- **Contratos (Parámetros / Props)**: Interfaces de entrada estrictamente tipadas.
+- **Retornos**: Estructuras resultantes y Promesas transaccionales.
+- **Efectos Secundarios**: Interacciones con Web Storage, mutaciones del DOM o ciclo de vida externo.
+- **Dependencias**: Inyecciones de estado y consumo de APIs de plataforma.
+
+Todo el código está documentado de forma impersonal, modular y altamente analítica para asegurar una transferencia de conocimiento fluida entre ingenieros.
 
 ## Sigue estos pasos para ejecutar en local
 

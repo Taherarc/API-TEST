@@ -1,3 +1,9 @@
+/**
+ * Reglas espaciales dedicadas al inspector modal geocientífico (`CityDetails.tsx`).
+ * Encapsula animaciones de entrada, overlays superpuestos con filtro matriz,
+ * y paletas prioritarias para contingencias de red OSM.
+ */
+
 .city-modal-overlay {
   position: fixed;
   top: 0;

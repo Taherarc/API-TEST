@@ -1,6 +1,7 @@
 /**
- * Componente especializado en la captura de terminos de busqueda.
- * Integra un mecanismo de debouncing para optimizar la carga computacional en filtrados.
+ * Módulo de recolección semántica especializado en la captura de dominios literales
+ * de búsqueda. Compone internamente mecanismos atenuantes (debouncing) reduciendo
+ * el consumo intensivo que acarrean los motores lógicos reactivos subyacentes.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -8,11 +9,11 @@ import { useDebounce } from '../../hooks/useDebounce';
 import '../../styles/SearchInput.css';
 
 /**
- * Propiedades del componente SearchInput.
+ * Descripción técnica del contrato de interface consumible.
  *
  * Parámetros:
- *   onSearch (function): Callback disparado cuando el termino estabilizado cambia.
- *   placeholder (string): Texto de sugerencia para el campo de entrada.
+ *     onSearch (function): Promotor disparado unívocamente tras finalizar la carencia del retraso inyector.
+ *     placeholder (string?): Texto descriptivo secundario proyectado condicionalmente en el campo mudo.
  */
 interface SearchInputProps {
   onSearch: (searchTerm: string) => void;
@@ -20,17 +21,27 @@ interface SearchInputProps {
 }
 
 /**
- * Renderiza un campo de busqueda enriquecido con control de frecuencia.
+ * Expone y procesa el elemento de formulario asíncrono controlando retardos tipográficos.
+ *
+ * Parámetros:
+ *     Props (SearchInputProps): Paquete descriptivo extraído en `onSearch` y valor por defecto en `placeholder`.
+ *
+ * Efectos Secundarios:
+ * - Emite de manera delegada la notificación textual validada hacia la unidad ancestro.
+ *
+ * Retorna:
+ *     JSX.Element: Un input HTML controlado y envuelto con identidad estructural para hojas de cascada.
  */
 export const SearchInput: React.FC<SearchInputProps> = ({ onSearch, placeholder = "Buscar..." }) => {
-  // Estado reactivo inmediato para el valor del input (controlado).
+  // Almacenamiento puramente sincrónico para renderizar la escritura humana (input controlado).
   const [inputValue, setInputValue] = useState('');
   
-  // Aplica el gancho useDebounce para retrasar la propagacion del termino 300ms.
+  // Utilidad consumida para estabilizar el valor estático solo mediante ventanas temporales vacías (300ms).
   const debouncedSearch = useDebounce(inputValue, 300);
 
   /**
-   * Efecto que notifica al componente padre cuando el termino estabilizado sufre cambios.
+   * Hook reactivo programado para resolver la sincronización ascendente.
+   * Triggerea la invocación callback únicamente asimilada tras cumplirse los tiempos calculados en debouncedSearch.
    */
   useEffect(() => {
     onSearch(debouncedSearch);

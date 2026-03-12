@@ -1,6 +1,7 @@
 /**
- * Componente Modal para la visualizacion de metadatos geoespaciales extendidos.
- * Integra la captura de datos desde OpenStreetMap Nominatim de forma aislada.
+ * Módulo Modal para exposición de metadatos geoespaciales extendidos.
+ * Aísla la instanciación de red asíncrona contra la API de OpenStreetMap Nominatim
+ * y gobierna la superposición visual sobre la jerarquía z-index activa.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -9,12 +10,12 @@ import { geoRepository } from '../../repositories/geoRepository';
 import '../../styles/CityDetails.css';
 
 /**
- * Contrato de propiedades para el inspector de ciudad.
+ * Interfaz inyectora de dependencias para consulta y destrucción del overlay.
  *
  * Parámetros:
- *   cityName (string): Nombre textual de la ciudad a buscar.
- *   countryIso2 (string): Codigo ISO del pais para precision de búsqueda.
- *   onClose (function): Callback para destruir el modal y retornar a la vista previa.
+ *     cityName (string): Referencia toponímica matriz para búsqueda heurística textual.
+ *     countryIso2 (string): Filtro de precisión ISO acotando la búsqueda al dominio nacional.
+ *     onClose (function): Hook detonante para eliminación del árbol modal reactivo desde su padre.
  */
 interface CityDetailsProps {
   cityName: string;
@@ -23,17 +24,23 @@ interface CityDetailsProps {
 }
 
 /**
- * Renderiza un dialogo modal con informacion de geolocalizacion enriquecida.
+ * Dibuja un diálogo bloqueante y despacha consultas periféricas geocientíficas.
+ *
+ * Parámetros:
+ *     Props (CityDetailsProps): Tupla estructurada de topónimos locales y cierres en desestructuración.
+ *
+ * Retorna:
+ *     JSX.Element: Un overlay absoluto y contenedor nodal bloqueante propagaciones al DOM subyacente.
  */
 export const CityDetails: React.FC<CityDetailsProps> = ({ cityName, countryIso2, onClose }) => {
-  // Almacena el objeto de respuesta del repositorio OSM.
+  // Inicializa a nulo un contenedor temporal en memoria para deseriales de `OSMPlace`.
   const [details, setDetails] = useState<OSMPlace | null>(null);
-  // Estado local para controlar el feedback de carga dentro del modal.
+  // Operativa bandera asíncrona; precargada en `true` suprimiendo vistas parciales tempranas.
   const [loading, setLoading] = useState(true);
 
   /**
-   * Efecto de carga inicial tras el montaje del componente.
-   * Realiza la consulta asincrona al repositorio de mapas.
+   * Disparador imperativo montado sobre variables del ecosistema unívoco geo-padre.
+   * Modifica colgaduras en carga, pide flujos de proxy y deserializa las peticiones de retorno OSM.
    */
   useEffect(() => {
     const fetchDetails = async () => {
@@ -48,7 +55,7 @@ export const CityDetails: React.FC<CityDetailsProps> = ({ cityName, countryIso2,
 
   return (
     <div className="city-modal-overlay" onClick={onClose}>
-      {/* Evita que el clic dentro del modal cierre el dialogo por propagacion. */}
+      {/* Detiene la cascada natural del DOM (bubbling) impidiendo el cierre del nodo padre al clickear el centro. */}
       <div className="city-modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>✕</button>
         <h2>{cityName}</h2>

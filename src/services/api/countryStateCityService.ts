@@ -1,6 +1,7 @@
 /**
- * Infraestructura de comunicacion con la API CountryStateCity.
- * Provee metodos desacoplados para la consulta de datos geograficos globales.
+ * Módulo de infraestructura para transacciones de red contra la API CountryStateCity.
+ * Encapsula la configuración de endpoints, inyección de tokens paramétricos y
+ * expone métodos de hidratación tipados al modelo del dominio territorial.
  */
 
 import { Country, State, City } from '../../types/geoTypes';
@@ -12,7 +13,7 @@ const BASE_URL = 'https://api.countrystatecity.in/v1';
 const API_KEY = import.meta.env.VITE_CSC_API_KEY;
 
 /**
- * Error de dominio para escenarios donde se excede la cuota de peticiones contratada.
+ * Clase de excepción extendida para el control de saturación de la cuota de red autorizada.
  */
 export class RateLimitError extends Error {
   constructor() {
@@ -22,7 +23,7 @@ export class RateLimitError extends Error {
 }
 
 /**
- * Error de dominio para fallos internos o criticos del servidor remoto.
+ * Clase de excepción extendida para el colapso absoluto del host remoto del proveedor geográfico.
  */
 export class ServerError extends Error {
   constructor() {
@@ -32,16 +33,16 @@ export class ServerError extends Error {
 }
 
 /**
- * Función interna de bajo nivel para ejecutar peticiones HTTP autenticadas.
+ * Función inyectora asíncrona de bajo nivel que instrumenta promesas HTTP y deserialización estricta.
  *
  * Parámetros:
- *   endpoint (string): Ruta parcial del recurso a consultar.
+ *     endpoint (string): Segmento URI complementario a concatenar sobre el dominio base.
  *
  * Retorna:
- *   Promise<T>: Promesa que resuelve al tipo generico solicitado tras el parseo JSON.
+ *     Promise<T>: Estructura promisoria tipada delegando objetos `Country`, `State` o `City`.
  *
  * Dependencias:
- *   fetch: API nativa del navegador para transmision de datos.
+ *     fetch: API de la plataforma cliente subyacente transaccionando el flujo I/O en red.
  */
 async function fetchCSC<T>(endpoint: string): Promise<T> {
   // Realiza la llamada asincrona inyectando la llave de API en las cabeceras.
@@ -65,29 +66,38 @@ async function fetchCSC<T>(endpoint: string): Promise<T> {
 }
 
 /**
- * Objeto de servicio que implementa los puntos finales de la API CSC.
+ * Objeto utilitario abstracto que expone los puentes transaccionales paramétricos para consultas CSC.
  */
 export const cscService = {
   /**
-   * Recupera el listado completo de paises registrados a nivel mundial.
+   * Exige activamente el listado matricial completo de países indizados a nivel mundial.
+   *
+   * Retorna:
+   *     Promise<Country[]>: Listado serializado directo del nodo topológico principal.
    */
   getCountries: () => fetchCSC<Country[]>('/countries'),
   
   /**
-   * Obtiene la coleccion de estados o departamentos asociados a un pais especifico.
+   * Sub-deriva la colección dependiente de estados o departamentos inscritos al país emisor.
    *
    * Parámetros:
-   *   countryIso (string): Codigo ISO2 identificador del pais.
+   *     countryIso (string): Código universal identificador del nodo padre.
+   *
+   * Retorna:
+   *     Promise<State[]>: Sub-árbol espacial del nivel estadual.
    */
   getStates: (countryIso: string) => 
     fetchCSC<State[]>(`/countries/${countryIso}/states`),
     
   /**
-   * Consulta las ciudades pertenecientes a una subdivision administrativa de un pais.
+   * Sub-deriva transversalmente la base estructural urbana asociando dependencias ISO de dos fronteras.
    *
    * Parámetros:
-   *   countryIso (string): Codigo ISO2 del pais.
-   *   stateIso (string): Codigo del estado o provincia.
+   *     countryIso (string): Nomenclatura universal validada de país.
+   *     stateIso (string): Código colateral asignado al sub-nodo regional.
+   *
+   * Retorna:
+   *     Promise<City[]>: Agrupaciones base de los poblados intersectando ambas dependencias.
    */
   getCities: (countryIso: string, stateIso: string) => 
     fetchCSC<City[]>(`/countries/${countryIso}/states/${stateIso}/cities`)

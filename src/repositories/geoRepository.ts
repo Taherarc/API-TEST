@@ -1,7 +1,7 @@
 /**
- * Orquestador principal de datos (Patrón Repository).
- * Encapsula la lógica de decision sobre las fuentes de datos y gestiona el flujo
- * de resiliencia mediante la estrategia Network First + Cache Fallback.
+ * Orquestador principal de persistencia transaccional (Patrón Repository).
+ * Encapsula la lógica de decisión sobre las fuentes de datos (Red vs Memoria) y gestiona
+ * el flujo de resiliencia mediante la estrategia asíncrona "Network First + Cache Fallback".
  */
 
 import { cscService } from '../services/api/countryStateCityService';
@@ -10,14 +10,15 @@ import { getFromCache, saveToCache } from '../services/cacheService';
 import { Country, State, City, GeoDataResponse, OSMPlace } from '../types/geoTypes';
 
 /**
- * Fachada de acceso a datos geograficos que garantiza la disponibilidad de informacion.
+ * Fachada inyectable de acceso a metadatos geográficos que garantiza 
+ * tolerancias a fallos e idempotencia en la infraestructura proxy.
  */
 export const geoRepository = {
   /**
-   * Obtiene la coleccion de paises priorizando la conexion de red.
+   * Obtiene la colección taxonómica de países priorizando la ingesta real de red.
    *
    * Retorna:
-   *   Promise<GeoDataResponse<Country[]>>: Objeto que contiene los datos y el origen de los mismos.
+   *     Promise<GeoDataResponse<Country[]>>: Tupla encapsulando los datos mapeados y la huella de origen (`network` o `cache`).
    */
   getCountries: async (): Promise<GeoDataResponse<Country[]>> => {
     const cacheKey = 'countries_data';
@@ -38,10 +39,13 @@ export const geoRepository = {
   },
 
   /**
-   * Gestiona la carga de estados de un pais con respaldo en cache local.
+   * Gestiona la carga dependiente de divisiones administrativas con respaldo de sesión local.
    *
    * Parámetros:
-   *   countryIso (string): Codigo identificador del pais.
+   *     countryIso (string): Código ISO Alfa-2 identificador soberano.
+   *
+   * Retorna:
+   *     Promise<GeoDataResponse<State[]>>: Promesa resolviendo arreglo derivado acoplado a la raíz nacional.
    */
   getStates: async (countryIso: string): Promise<GeoDataResponse<State[]>> => {
     const cacheKey = `states_${countryIso}`;
@@ -60,11 +64,14 @@ export const geoRepository = {
   },
 
   /**
-   * Coordina la peticion de ciudades para un estado y pais definidos.
+   * Coordina la petición determinística de municipalidades cruzando códigos jerárquicos.
    *
    * Parámetros:
-   *   countryIso (string): Codigo ISO del pais origen.
-   *   stateIso (string): Codigo del estado seleccionado.
+   *     countryIso (string): Nomenclatura geodésica soberana pre-recolectada.
+   *     stateIso (string): Identidad regional para concatenación de Endpoints.
+   *
+   * Retorna:
+   *     Promise<GeoDataResponse<City[]>>: Resolución asíncrona devolviendo arrays poblacionales acotados.
    */
   getCities: async (countryIso: string, stateIso: string): Promise<GeoDataResponse<City[]>> => {
     const cacheKey = `cities_${countryIso}_${stateIso}`;
@@ -83,12 +90,15 @@ export const geoRepository = {
   },
 
   /**
-   * Obtiene metadatos geoespaciales enriquecidos desde OpenStreetMap.
-   * Aplica una politica de Cache First para cumplir con las politicas de uso de OSM.
+   * Recupera metadatos geoespaciales enriquecidos (lat/lon/tipo) desde OpenStreetMap Nominatim.
+   * Forzosa ejecución bajo la política "Cache First" mitigando el estrangulamiento limitativo remoto.
    *
    * Parámetros:
-   *   cityName (string): Nombre de la ciudad a geolocalizar.
-   *   countryCode (string): Codigo del pais de busqueda.
+   *     cityName (string): Cadena nominal explícita del centro objetivo.
+   *     countryCode (string): Abreviante ISO emparejado al nivel root.
+   *
+   * Retorna:
+   *     Promise<OSMPlace | null>: Registro posicional tipado o entidad nula representativa de falla descriptiva.
    */
   getCityDetails: async (cityName: string, countryCode: string): Promise<OSMPlace | null> => {
     const cacheKey = `osm_city_${countryCode}_${cityName}`;

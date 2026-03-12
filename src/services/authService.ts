@@ -1,6 +1,7 @@
 /**
- * Modulo de seguridad y gestion de acceso.
- * Controla la simulacion de autenticacion mediante el uso de tokens persistentes en sesion.
+ * Servicio fundamental de seguridad y autenticación estática lateral.
+ * Gestiona el ciclo de vida del token de sesión interactuando directamente
+ * con el Web Storage API (sessionStorage) del ecosistema cliente.
  */
 
 // Identificador unico para el almacenamiento del token en la sesion del navegador.
@@ -14,17 +15,17 @@ const DEMO_TOKEN = 'token_admin_hardcoded_123';
  */
 export const authService = {
   /**
-   * Ejecuta la comprobacion de credenciales y establece la sesion si son correctas.
+   * Ejecuta la confrontación de credenciales estáticamente asimiladas y establece el pasaje de sesión.
    *
    * Parámetros:
-   *   username (string): Nombre de usuario proporcionado.
-   *   password (string): Contraseña en texto plano para verificacion.
+   *     username (string): Alias de operador capturado en la pasarela.
+   *     password (string): Cadena criptográfica (texto plano operativo simulado) de cotejo.
+   *
+   * Efectos Secundarios:
+   * - Escribe un nuevo descriptor de clave-valor (Token) inyectable en el `sessionStorage`.
    *
    * Retorna:
-   *   boolean: True si las credenciales coinciden con los valores predefinidos.
-   *
-   * Efectos secundarios:
-   *   Establece una entrada en sessionStorage si la autenticacion es exitosa.
+   *     boolean: Verdadero si la correspondencia lógica se satisface. Falso en derivación.
    */
   login: (username: string, password: string): boolean => {
     // Verifica si las credenciales coinciden con el usuario admin predeterminado.
@@ -38,10 +39,10 @@ export const authService = {
   },
 
   /**
-   * Finaliza la sesion actual eliminando los registros de seguridad.
+   * Secuencia irreversible de cierre contextual local.
    *
-   * Efectos secundarios:
-   *   Remueve la clave de autenticacion del almacenamiento de la sesion.
+   * Efectos Secundarios:
+   * - Elimina imperativamente de la memoria del navegador el token reservado `geo_auth_token`.
    */
   logout: (): void => {
     // Elimina el token del storage para invalidar la sesion activa.
@@ -49,10 +50,10 @@ export const authService = {
   },
 
   /**
-   * Verifica de manera sincrona si existe una sesion activa valida.
+   * Interroga estructuralmente a la memoria temporal del ambiente (Navegador).
    *
    * Retorna:
-   *   boolean: True si el token almacenado coincide con el token esperado.
+   *     boolean: Condición de validez resultante de emparejar el descriptor persistido vs DEMO_TOKEN.
    */
   isAuthenticated: (): boolean => {
     // Compara el valor actual en storage con la constante del sistema.

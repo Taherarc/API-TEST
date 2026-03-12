@@ -1,17 +1,18 @@
 /**
- * Componente funcional para el control de la navegacion por bloques (Paginacion).
- * Proporciona una interfaz simplificada para el cambio de paginas.
+ * Módulo de interfaz para el control interactivo de bloques de paginación.
+ * Desacopla la vista de botones e indicadores del componente orquestador externo
+ * y abstrae los recálculos aritméticos en la navegación bidireccional de datos.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 /**
- * Contrato de propiedades para el componente de paginacion.
+ * Contrato de tipos para la inyección de propiedades al componente de paginación.
  *
  * Parámetros:
- *   currentPage (number): Indice de la página que se visualiza actualmente.
- *   totalPages (number): Cantidad total de paginas calculadas.
- *   onPageChange (function): Callback ejecutado al solicitar un cambio de bloque.
+ *     currentPage (number): Índice entero escalar de la página visualizada actualmente.
+ *     totalPages (number): Techo absoluto de páginas calculadas sobre la dimensión del dataset.
+ *     onPageChange (function): Callback de retrollamada inyector disparado para requerir un cambio logico de bloque.
  */
 interface PaginationProps {
   currentPage: number;
@@ -20,15 +21,33 @@ interface PaginationProps {
 }
 
 /**
- * Renderiza los controles de desplazamiento entre bloques de datos.
+ * Renderiza dinámicamente el controlador visual de desplazamiento estructurado.
+ *
+ * Parámetros:
+ *     Props (PaginationProps): Diccionario desestructurado con valores y funciones de la interfaz tipada.
+ *
+ * Efectos Secundarios:
+ * - Emite mutaciones asíncronas de desplazamiento sobre el objeto `window` (scroll pasivo forzado).
+ *
+ * Retorna:
+ *     JSX.Element | null: Contenedor HTML interactivo para recorrido del array, o nodo nulo
+ *     (inactivo) si la subdivisión aritmética deviene en un margen unitario de páginas.
  */
 const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
-  // Optimizacion: No renderiza nada si la totalidad del dataset cabe en una sola página.
+  /**
+   * Hook de montado sincronizado para re-posicionar el viewport tras la solicitud de un paginado.
+   * Modifica imperativamente la posición vertical del DOM subiendo a punto `0`.
+   */
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
+  // Optimizador lógico: Si la volumetría de elementos cabe en una cuadrícula sencilla, inactiva la UI.
   if (totalPages <= 1) return null;
 
   return (
     <div className="pagination-controls">
-      {/* Boton de retroceso, deshabilitado si se encuentra en el origen. */}
+      {/* Botón de recesión indexada. Su estado inactivo es derivado si se toca el tope inferior 1. */}
       <button 
         disabled={currentPage === 1} 
         onClick={() => onPageChange(currentPage - 1)}
@@ -37,10 +56,10 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         Anterior
       </button>
       
-      {/* Indicador textual de la posicion relativa actual. */}
+      {/* Etiquetado no accionable exponiendo las métricas paramétricas al observador. */}
       <span className="page-indicator">Bloque {currentPage} de {totalPages}</span>
       
-      {/* Boton de avance, deshabilitado al alcanzar el limite de datos. */}
+      {/* Botón de progresión condicional. Auto-inhabilitado iterativamente frente a bordes del array. */}
       <button 
         disabled={currentPage === totalPages} 
         onClick={() => onPageChange(currentPage + 1)}

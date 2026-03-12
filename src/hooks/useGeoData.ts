@@ -1,26 +1,39 @@
 /**
- * Gancho para la orquestacion de carga de datos geograficos.
- * Actua como puente entre la interfaz de usuario y el repositorio de datos.
+ * Gancho orquestador general de peticiones de infraestructura geográfica.
+ * Actúa integrando repositorios aislados con el entorno asíncrono y los
+ * estados reactivos transaccionales requeridos en el renderizado de la interfaz.
  */
 
 import { useState, useCallback } from 'react';
 import { geoRepository } from '../repositories/geoRepository';
 
 /**
- * Provee estados de carga, error y metodos para la adquisicion de datos.
+ * Provee un mecanismo seguro y autocontenido para ejecutar flujos de petición de datos,
+ * aislando el control de fallos, la carga progresiva y las mutaciones en arreglos.
+ * 
+ * Dependencias:
+ * - geoRepository: Lógica externa abstracta encargada de invocar Endpoints en crudo.
+ *
+ * Retorna:
+ *     Object: Diccionario con variables de estado de solo lectura e invocadores asíncronos (`fetchCountries`, `fetchStates`, `fetchCities`).
  */
 export function useGeoData() {
-  // Almacena el listado de elementos recuperados (paises, estados o ciudades).
+  // Arreglo inmutable base para almacenar secuencias atómicas territoriales.
   const [dataList, setDataList] = useState<any[]>([]);
-  // Bandera de control para la visualizacion de estados de espera (spinners).
+  // Bandera operacional true/false denotando ejecución de promesa transaccional en curso.
   const [loading, setLoading] = useState(false);
-  // Almacena mensajes descriptivos en caso de fallo en la infraestructura.
+  // Propiedad contenedor de reportes descriptivos frente a un rechazo de petición HTTP o parseo.
   const [error, setError] = useState<string | null>(null);
-  // Indica la procedencia del dato (red, cache o respaldo).
+  // Rastros telemetrales devueltos pre-embebidos por Axios u OS informando si es cache o red pura.
   const [source, setSource] = useState<'network' | 'cache' | 'fallback' | null>(null);
 
   /**
-   * Ejecuta la recuperacion de paises desde el repositorio.
+   * Ejecuta asíncronamente el recuperador primario de países indexados mundialmente.
+   *
+   * Efectos Secundarios:
+   * - Limpia el string de fallos anteriores (`setError(null)`).
+   * - Cambia banderas booleanas de inicio/fin carga.
+   * - Inyecta volúmenes de arreglos pesados a `dataList` de ser exitoso.
    */
   const fetchCountries = useCallback(async () => {
     setLoading(true);
@@ -30,19 +43,20 @@ export function useGeoData() {
       setDataList(response.data);
       setSource(response.source);
     } catch (err: any) {
-      // Captura y propaga el mensaje de error del repositorio.
       setError(err.message);
     } finally {
-      // Asegura el cese del estado de carga independientemente del resultado.
       setLoading(false);
     }
   }, []);
 
   /**
-   * Solicita el listado de subdivisiones regionales de un pais.
+   * Recupera asíncronamente divisiones administrativas de grado matriz para un país origen.
    *
    * Parámetros:
-   *   countryIso (string): Codigo identificador del pais.
+   *     countryIso (string): Código ISO-2 Alpha único identificando al país nativo.
+   *
+   * Efectos Secundarios:
+   * - Modifica de nuevo todo el arreglo `dataList` sustituyendo su historial.
    */
   const fetchStates = useCallback(async (countryIso: string) => {
     setLoading(true);
@@ -59,11 +73,14 @@ export function useGeoData() {
   }, []);
 
   /**
-   * Obtiene la coleccion de centros urbanos de una region especifica.
+   * Recoge secuencialmente agrupaciones de ciudades subyacentes emparejadas al estado objetivo.
    *
    * Parámetros:
-   *   countryIso (string): Codigo del pais.
-   *   stateIso (string): Codigo de la region o estado.
+   *     countryIso (string): Código ISO identificatorio del ente nacional.
+   *     stateIso (string): Código normalizado representativo del estado colindante.
+   *
+   * Efectos Secundarios:
+   * - Refresca el almacén `dataList` con las colecciones poblacionales finales.
    */
   const fetchCities = useCallback(async (countryIso: string, stateIso: string) => {
     setLoading(true);
