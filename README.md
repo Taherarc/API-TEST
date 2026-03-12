@@ -4,7 +4,7 @@ Esta aplicación es un sistema de exploración geográfica, desarrollado con **R
 
 ## Arquitectura del Sistema
 
-El proyecto está organizado siguiendo principios de diseño profesional para maximizar la mantenibilidad:
+El proyecto está organizado de la siguiente forma:
 ```
 explorador-geo/
 ├── public/                 # Recursos estáticos servidos directamente
