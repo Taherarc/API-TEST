@@ -61,9 +61,9 @@ La aplicación implementa una estrategia **Network First + Cache Fallback**:
 - **Debounced Search**: Búsqueda local optimizada que espera 300ms para evitar sobrecarga de renders.
 - **Paginación Inteligente**: Segmentación de listas largas para mantener un rendimiento de renderizado constante.
 
-## Documentación Técnica Exhaustiva
+## Documentación
 
-Este proyecto ha superado un riguroso proceso de documentación técnica en español, orientado a estándares profesionales y públicos.
+Este proyecto tiene documentación técnica en español, orientada a estándares.
 Cada módulo (React, Hooks, Contextos, Servicios y CSS) contiene bloques de docstrings y comentarios detallados que describen:
 - **Propósito Arquitectónico**: Función principal de cada componente en la jerarquía del sistema.
 - **Contratos (Parámetros / Props)**: Interfaces de entrada estrictamente tipadas.
@@ -71,9 +71,7 @@ Cada módulo (React, Hooks, Contextos, Servicios y CSS) contiene bloques de docs
 - **Efectos Secundarios**: Interacciones con Web Storage, mutaciones del DOM o ciclo de vida externo.
 - **Dependencias**: Inyecciones de estado y consumo de APIs de plataforma.
 
-Todo el código está documentado de forma impersonal, modular y altamente analítica para asegurar una transferencia de conocimiento fluida entre ingenieros.
-
-## Sigue estos pasos para ejecutar en local
+## Siga estos pasos para ejecutar en local
 
 1. Clone el repositorio y obtenga su propia APIKEY de CountryStateCity API.
 2. Configure su `VITE_CSC_API_KEY` en el archivo `.env`.
